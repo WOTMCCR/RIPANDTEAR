@@ -60,6 +60,8 @@ AppDelegate::~AppDelegate()
 #endif
 }
 
+
+//main
 // if you want a different context, modify the value of glContextAttrs
 // it will affect all platforms
 void AppDelegate::initGLContextAttrs()
