@@ -1,6 +1,11 @@
 # Cocos大作业游戏开发开发文档
 
 shenzhen university 计算机游戏开发 期末
+<img width="507" alt="game" src="https://github.com/WOTMCCR/RIPANDTEAR/assets/104082908/2a889c45-ae90-4ac8-ba7f-24c9e843b8e4">
+
+
+<img width="499" alt="gameover" src="https://github.com/WOTMCCR/RIPANDTEAR/assets/104082908/a6feca8b-25a9-4240-9b74-dc07741ea9b2">
+
 
 大体实现思路，总体框架使用，游戏交互的模版进行修改
 
