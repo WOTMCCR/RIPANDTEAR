@@ -1,6 +1,7 @@
 # Cocos大作业游戏开发开发文档
 
 shenzhen university 计算机游戏开发 期末
+
 <img width="507" alt="game" src="https://github.com/WOTMCCR/RIPANDTEAR/assets/104082908/2a889c45-ae90-4ac8-ba7f-24c9e843b8e4">
 
 
