@@ -8,6 +8,7 @@
 #include "./Evil/ImpDark.h"
 #include "./Evil/Shambler.h"
 #include "./Evil/CacoClassic.h"
+//#include "EndUI.h"
 
 USING_NS_CC;
 
@@ -19,7 +20,8 @@ public:
 
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::Scene* createScene();
+    static cocos2d::Scene* createScene(int level);
+    static BattleScene* createWithLevel(int level);
     int level = 1;
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
@@ -32,6 +34,7 @@ public:
     void gameover();
     void success();
 	
+
 	void update(float dt);
     // implement the "static create()" method manually
     CREATE_FUNC(BattleScene);
@@ -72,6 +75,7 @@ public:
 
 
 private:
+    int Battlelevel;
 	Sprite* bean;
 	Size visibleSize;
 	//Joystick* m_joystick;

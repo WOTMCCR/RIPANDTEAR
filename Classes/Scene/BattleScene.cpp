@@ -1,16 +1,42 @@
 #include "BattleScene.h"
-#include "SimpleAudioEngine.h"
+//#include "SimpleAudioEngine.h"
+#include "ui/CocosGUI.h"
+#include "cocostudio/CocoStudio.h"
+#include "audio/include/AudioEngine.h"
+#include "EndUI.h"
 
 USING_NS_CC;
+using namespace ui;
+using namespace cocostudio;
+using namespace experimental;
 
 bool isAttackKeyPressed = false;
 
-Scene* BattleScene::createScene()
+Scene* BattleScene::createScene(int level)
 {
+    if(level == 2) CCLOG("Enter level 2 ************");
+//    Battlelevel = level;
     auto scene = Scene::create();
-    auto layer = BattleScene::create();
+//    auto layer = BattleScene::create();
+    auto layer = BattleScene::createWithLevel(level);
     scene->addChild(layer);
     return scene;
+}
+
+BattleScene* BattleScene::createWithLevel(int level)
+{
+    BattleScene* ret = new BattleScene();
+    if (ret && ret->init())
+    {
+        ret->Battlelevel = level;
+        ret->autorelease();
+        return ret;
+    }
+    else
+    {
+        delete ret;
+        return nullptr;
+    }
 }
 
 bool BattleScene::init()
@@ -24,10 +50,10 @@ bool BattleScene::init()
     this->addChild(blackLayer, 10, "blackLayer");
 
     // Play background music
-//    CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("back.mp3");
-    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("demon-chant.mp3", true);
+    //CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("back.mp3",true);
+//    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("demon-chant.mp3", true);
 //    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("back2.mp3", true);
-
+    AudioEngine::setVolume(AudioEngine::play2d("back.mp3", true), 1.0f);
 
     // Display text sequence
     this->displayTextSequence();
@@ -143,15 +169,15 @@ bool BattleScene::init()
         CacoClassic(0.5f);
         AddImpDark(0);
         // 生成一个1到6之间的随机浮点数
-        float randomIntervalImpDark = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f)));
+        float randomIntervalImpDark = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f))) - Battlelevel * 2.0f;
         this->schedule(schedule_selector(BattleScene::AddImpDark), randomIntervalImpDark);
 
-        float randomIntervalCacoClassic = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f)));
+        float randomIntervalCacoClassic = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f))) - Battlelevel * 2.0f;
         this->schedule(schedule_selector(BattleScene::CacoClassic), randomIntervalCacoClassic);
 
-        float randomIntervalAddShambler = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f)));
+        float randomIntervalAddShambler = 3.0f + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX/(6.0f-1.0f))) - Battlelevel * 2.0f;
         this->schedule(schedule_selector(BattleScene::AddShambler), randomIntervalAddShambler);
-    }, 38.0f, "startGame");
+    }, 31.0f, "startGame");
 
 //	this->scheduleUpdate();
 
@@ -230,7 +256,7 @@ void BattleScene::update(float dt){
     }
     //shift冲刺
     if(doom != nullptr) {
-        if (isKeyPressed(EventKeyboard::KeyCode::KEY_SHIFT)) {
+        if (isKeyPressed(EventKeyboard::KeyCode::KEY_K)) {
             doom->sprint();
         }
         doom->move(m_direction);
@@ -251,7 +277,12 @@ void BattleScene::update(float dt){
 //}
 void BattleScene::gameover()
 {
-    // Add a black background layer
+    AudioEngine::stopAll();
+	
+	Director::getInstance()->replaceScene(EndUI::createScene());
+	Director::getInstance()->resume();
+	/*ps:关掉结束界面
+	// Add a black background layer
     auto blackLayer = LayerColor::create(Color4B(0, 0, 0, 255));
     this->addChild(blackLayer, 10, "blackLayer");
 
@@ -281,9 +312,12 @@ void BattleScene::gameover()
     auto menu = Menu::create(restartItem, exitItem, nullptr);
     menu->setPosition(Vec2::ZERO);
     blackLayer->addChild(menu, 1);
-
-    CCLOG("gameover");
+	*/
+	CCLOG("gameover");
+    
 }
+
+
 
 //胜利
 void BattleScene::success()
@@ -373,7 +407,7 @@ void BattleScene::menuRestartCallback(cocos2d::Ref* pSender)
     return;
 #endif
     //score =0;
-    Director::getInstance()->replaceScene(BattleScene::createScene());
+    Director::getInstance()->replaceScene(BattleScene::createScene(level));
     Director::getInstance()->resume();
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
@@ -411,7 +445,7 @@ void BattleScene::displayTextSequence()
     };
 
     float delay = 5.0f;  // Start after the initial image
-    float displayTime = 5.0f; // Time each text stays on the screen before fading out
+    float displayTime = 4.0f; // Time each text stays on the screen before fading out
 
     for (const auto& textPair : textSequence)
     {
@@ -424,14 +458,6 @@ void BattleScene::displayTextSequence()
         labelEng->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER); // Center align the text
         this->addChild(labelEng, 11);
 
-//        // Create the label for the Chinese text
-//        auto labelChi = Label::createWithTTF(textPair.second, "fonts/Marker Felt.ttf", 24);
-//        labelChi->setPosition(Vec2(origin.x + visibleSize.width / 2,
-//                                   origin.y + visibleSize.height / 2 - 30));
-//        labelChi->setTextColor(Color4B::WHITE);
-//        labelChi->setOpacity(0);  // Initially invisible
-//        labelChi->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER); // Center align the text
-//        this->addChild(labelChi, 11);
 
         // Define the fade in, wait, fade out, and remove actions for the English text
         auto fadeInEng = FadeIn::create(1.0f);
@@ -444,16 +470,6 @@ void BattleScene::displayTextSequence()
 
         labelEng->runAction(sequenceEng);
 
-        // Define the fade in, wait, fade out, and remove actions for the Chinese text
-//        auto fadeInChi = FadeIn::create(1.0f);
-//        auto waitChi = DelayTime::create(displayTime);
-//        auto fadeOutChi = FadeOut::create(1.0f);
-//        auto removeLabelChi = RemoveSelf::create();
-//
-//        auto delayActionChi = DelayTime::create(delay);
-//        auto sequenceChi = Sequence::create(delayActionChi, fadeInChi, waitChi, fadeOutChi, removeLabelChi, nullptr);
-//
-//        labelChi->runAction(sequenceChi);
 
         delay += displayTime + 1.0f;  // Increase delay for next text
     }
@@ -461,7 +477,7 @@ void BattleScene::displayTextSequence()
     // Schedule the transition to the main scene after the last text
     auto transitionDelay = DelayTime::create(delay + 1.0f);
     auto transitionCallFunc = CallFunc::create([this]() {
-        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("back2.mp3", true);
+//        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("back2.mp3", true);
         this->removeChildByName("blackLayer");
         this->scheduleUpdate();  // Resume the update loop
     });
